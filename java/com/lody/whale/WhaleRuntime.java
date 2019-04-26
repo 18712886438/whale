@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 public class WhaleRuntime {
 
     static {
-        System.loadLibrary("whale");
+        System.load("/data/local/tmp/libwhale.so");
     }
 
     private static String getShorty(Member member) {
