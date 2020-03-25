@@ -15,27 +15,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("ZZZ", "10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
+//        Log.d("ZZZ", "10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
+//
+//        XposedHelpers.findAndHookMethod(MainActivity.class, "add", int.class, int.class, new XC_MethodHook(){
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//
+//                param.setResult(15);
+//            }
+//        });
+//
+//        XposedHelpers.findAndHookMethod(MainActivity.class, "sub", int.class, int.class, new XC_MethodHook(){
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//
+////                boolean rel = (boolean) XposedHelpers.callStaticMethod(PendingHookTest.class, "test");
+////                Log.d("ZZZ", " call test and result is " + rel);
+//                param.setResult(15);
+//            }
+//        });
+//
+//        Log.d("ZZZ", "after hook  10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
 
-        XposedHelpers.findAndHookMethod(MainActivity.class, "add", int.class, int.class, new XC_MethodHook(){
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                param.setResult(15);
-            }
-        });
-
-        XposedHelpers.findAndHookMethod(MainActivity.class, "sub", int.class, int.class, new XC_MethodHook(){
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                param.setResult(15);
-            }
-        });
-
-        Log.d("ZZZ", "after hook  10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
+        App.initedTest = true;
+        PendingHookTest.test();
     }
 
     int add(int a, int b) {
