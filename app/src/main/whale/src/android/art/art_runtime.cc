@@ -55,16 +55,7 @@ bool ArtRuntime::OnLoad(JavaVM *vm, JNIEnv *env, jclass java_class) {
     api_level_ = GetAndroidApiLevel();
     PreLoadRequiredStuff(env);
     const char *art_path = api_level_ >= ANDROID_Q ? kLibArtPath_Q : kLibArtPath;
-    const char *art_compiler_path = api_level_ >= ANDROID_Q ? kLibArtCompilerPath_Q : nullptr;
 
-    if (art_compiler_path != nullptr) {
-        art_compiler_elf_image_ = WDynamicLibOpen(art_compiler_path);
-        if (art_compiler_elf_image_ != nullptr) {
-            LOG(INFO) << " libart-compiler.so found ";
-            replaceUpdateCompilerOptionsQ();
-        }
-
-    }
     art_elf_image_ = WDynamicLibOpen(art_path);
     if (art_elf_image_ == nullptr) {
         LOG(ERROR) << "Unable to read data from libart.so.";
@@ -73,6 +64,11 @@ bool ArtRuntime::OnLoad(JavaVM *vm, JNIEnv *env, jclass java_class) {
     if (!art_symbol_resolver_.Resolve(art_elf_image_, api_level_)) {
         // The log will all output from ArtSymbolResolver.
         return false;
+    }
+
+    if (art_elf_image_ != nullptr) {
+        LOG(INFO) << " try to replace jit_update_options ";
+        replaceUpdateCompilerOptionsQ();
     }
     offset_t jni_code_offset = INT32_MAX;
     offset_t access_flags_offset = INT32_MAX;
@@ -517,7 +513,7 @@ void ArtRuntime::replaceUpdateCompilerOptionsQ() {
         return;
     origin_jit_update_options = static_cast<void (**)(void *)>(WDynamicLibSymbol(
             art_elf_image_,
-            "_ZN3art3jit3Jit20jit_update_options_E"
+            "_ZN3art3jit3Jit19jit_update_options_E"
     ));
     if (origin_jit_update_options == nullptr
         || *origin_jit_update_options == nullptr) {
