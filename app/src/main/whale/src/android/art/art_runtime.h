@@ -21,12 +21,14 @@ static constexpr const char *kAndroidLibDir = "/system/lib64/";
 static constexpr const char *kLibNativeBridgePath = "/system/lib64/libnativebridge.so";
 static constexpr const char *kLibArtPath = "/system/lib64/libart.so";
 static constexpr const char *kLibArtPath_Q = "/apex/com.android.runtime/lib64/libart.so";
+static constexpr const char *kLibArtCompilerPath_Q = "/apex/com.android.runtime/lib64/libart-compiler.so";
 static constexpr const char *kLibAocPath = "/system/lib64/libaoc.so";
 static constexpr const char *kLibHoudiniArtPath = "/system/lib64/arm64/libart.so";
 #else
 static constexpr const char *kAndroidLibDir = "/system/lib/";
 static constexpr const char *kLibArtPath = "/system/lib/libart.so";
 static constexpr const char *kLibArtPath_Q = "/apex/com.android.runtime/lib/libart.so";
+static constexpr const char *kLibArtCompilerPath_Q = "/apex/com.android.runtime/lib/libart-compiler.so";
 static constexpr const char *kLibAocPath = "/system/lib/libaoc.so";
 static constexpr const char *kLibHoudiniArtPath = "/system/lib/arm/libart.so";
 #endif
@@ -132,6 +134,8 @@ class ArtRuntime final {
 
     ptr_t CloneArtObject(ptr_t art_object);
 
+    void replaceUpdateCompilerOptionsQ();
+
     void FixBugN();
 
     void addHookedMethod(JNIEnv *env, jclass type, jobject hookMethod);
@@ -142,6 +146,7 @@ private:
     jmethodID bridge_method_;
     s4 api_level_;
     void *art_elf_image_;
+    void *art_compiler_elf_image_;
     NativeBridgeCallbacks OPTION *android_bridge_callbacks_;
     ArtSymbolResolver art_symbol_resolver_;
     RuntimeObjects runtime_objects_;

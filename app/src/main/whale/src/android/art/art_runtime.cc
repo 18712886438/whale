@@ -55,6 +55,13 @@ bool ArtRuntime::OnLoad(JavaVM *vm, JNIEnv *env, jclass java_class) {
     api_level_ = GetAndroidApiLevel();
     PreLoadRequiredStuff(env);
     const char *art_path = api_level_ >= ANDROID_Q ? kLibArtPath_Q : kLibArtPath;
+    const char *art_compiler_path = api_level_ >= ANDROID_Q ? kLibArtCompilerPath_Q : nullptr;
+
+    if (art_compiler_path != nullptr) {
+        art_compiler_elf_image_ = WDynamicLibOpen(art_compiler_path);
+        if (art_compiler_elf_image_ != nullptr)
+            replaceUpdateCompilerOptionsQ();
+    }
     art_elf_image_ = WDynamicLibOpen(art_path);
     if (art_elf_image_ == nullptr) {
         LOG(ERROR) << "Unable to read data from libart.so.";
@@ -492,6 +499,31 @@ ptr_t ArtRuntime::CloneArtObject(ptr_t art_object) {
     return symbols->Object_CloneWithSize(art_object, GetCurrentArtThread(), 0);
 }
 
+void (**origin_jit_update_options)(void *) = nullptr;
+
+//to replace jit_update_option
+void fake_jit_update_options(void* handle) {
+    //do nothing
+    return;
+}
+
+bool is_replaced = false;
+
+void ArtRuntime::replaceUpdateCompilerOptionsQ() {
+    if (is_replaced)
+        return;
+    origin_jit_update_options = static_cast<void (**)(void *)>(WDynamicLibSymbol(
+            art_compiler_elf_image_,
+            "_ZN3art3jit3Jit20jit_update_options_E"
+    ));
+    if (origin_jit_update_options == nullptr
+        || *origin_jit_update_options == nullptr) {
+        return;
+    }
+    *origin_jit_update_options = fake_jit_update_options;
+    is_replaced = true;
+}
+
 int (*old_ToDexPc)(void *thiz, void *a2, unsigned int a3, int a4);
 int new_ToDexPc(void *thiz, void *a2, unsigned int a3, int a4) {
     return old_ToDexPc(thiz, a2, a3, 0);
@@ -542,7 +574,6 @@ ALWAYS_INLINE bool ArtRuntime::HookGetOatQuickMethodHeaderImpl() {
     if (PreGetOatQuickMethodHeader != nullptr) {
         return true;
     }
-    __android_log_print(ANDROID_LOG_ERROR, "ZZZ", "hook GetOatQuickMethodHeader");
     void *_handle = nullptr;
     if (sizeof(REG) == 8) {
         _handle = WDynamicLibSymbol(
@@ -564,5 +595,5 @@ ALWAYS_INLINE bool ArtRuntime::HookGetOatQuickMethodHeaderImpl() {
     return _handle != nullptr;
 }
 
-}  // namespace art
+    }  // namespace art
 }  // namespace whale
