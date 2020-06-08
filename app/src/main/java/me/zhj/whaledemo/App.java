@@ -14,13 +14,13 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        XposedHelpers.findAndHookMethod(PendingHookTest.class, "test", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                Log.d("ZZZ", " call test");
-                param.setResult(null);
-            }
-        });
+//        XposedHelpers.findAndHookMethod(PendingHookTest.class, "test", new XC_MethodHook() {
+//            @Override
+//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                super.beforeHookedMethod(param);
+//                Log.d("ZZZ", " call test");
+//                param.setResult(null);
+//            }
+//        });
     }
 }

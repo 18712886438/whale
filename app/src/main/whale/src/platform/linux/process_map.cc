@@ -35,7 +35,7 @@ std::unique_ptr<MemoryRange> FindExecuteMemoryRange(const char *name) {
                 if (strncmp(mapname, "/system/fake-libs/", 18) == 0) {
                     return true;
                 }
-                if (strstr(mapname, name) && strstr(perm, "x") && strstr(perm, "r")) {
+                if (strstr(mapname, name) && (strstr(perm, "r-xp") || strstr(perm, "r--p"))) {
                     range->path_ = strdup(mapname);
                     range->base_ = begin;
                     range->end_ = end;
@@ -58,7 +58,7 @@ ForeachMemoryRange(std::function<bool(uintptr_t, uintptr_t, char *, char *)> cal
                 break;
             sscanf(buf, "%lx-%lx %s %lx %s %ld %s", &begin, &end, perm,
                    &foo, dev, &inode, mapname);
-            if (!callback(begin - foo, end - foo, perm, mapname)) {
+            if (!callback(begin, end, perm, mapname)) {
                 break;
             }
         }

@@ -59,8 +59,11 @@ bool ArtRuntime::OnLoad(JavaVM *vm, JNIEnv *env, jclass java_class) {
 
     if (art_compiler_path != nullptr) {
         art_compiler_elf_image_ = WDynamicLibOpen(art_compiler_path);
-        if (art_compiler_elf_image_ != nullptr)
+        if (art_compiler_elf_image_ != nullptr) {
+            LOG(INFO) << " libart-compiler.so found ";
             replaceUpdateCompilerOptionsQ();
+        }
+
     }
     art_elf_image_ = WDynamicLibOpen(art_path);
     if (art_elf_image_ == nullptr) {
@@ -513,13 +516,14 @@ void ArtRuntime::replaceUpdateCompilerOptionsQ() {
     if (is_replaced)
         return;
     origin_jit_update_options = static_cast<void (**)(void *)>(WDynamicLibSymbol(
-            art_compiler_elf_image_,
+            art_elf_image_,
             "_ZN3art3jit3Jit20jit_update_options_E"
     ));
     if (origin_jit_update_options == nullptr
         || *origin_jit_update_options == nullptr) {
         return;
     }
+    LOG(INFO) << " jit_update_options found ";
     *origin_jit_update_options = fake_jit_update_options;
     is_replaced = true;
 }
