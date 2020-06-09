@@ -66,8 +66,7 @@ bool ArtRuntime::OnLoad(JavaVM *vm, JNIEnv *env, jclass java_class) {
         return false;
     }
 
-    if (art_elf_image_ != nullptr) {
-        LOG(INFO) << " try to replace jit_update_options ";
+    if (art_elf_image_ != nullptr && api_level_ >= ANDROID_Q) {
         replaceUpdateCompilerOptionsQ();
     }
     offset_t jni_code_offset = INT32_MAX;
@@ -551,7 +550,7 @@ void* NewGetOatQuickMethodHeader(void *thiz, void* artMethod, uintptr_t pc) {
 
     std::set<void*>::iterator it = hookedMethods.find(artMethod);
     if (it != hookedMethods.end()) {
-        __android_log_print(ANDROID_LOG_ERROR, "ZZZ", "GetOatQuickMethodHeader get called");
+        LOG(INFO) << "GetOatQuickMethodHeader get called";
         return nullptr;
     }
     return PreGetOatQuickMethodHeader(thiz, artMethod, pc);
