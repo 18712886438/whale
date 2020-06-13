@@ -1,2 +1,3 @@
 rootProject.name='whaleDemo'
 include ':app'
+include ':core'

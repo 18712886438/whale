@@ -36,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
         });
         Log.d("ZZZ", "after hook  10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
 
-
-
-
     }
 
     int add(int a, int b) {
