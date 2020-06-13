@@ -2,7 +2,7 @@
 #include "android/art/art_runtime.h"
 #include "base/logging.h"
 
-#define CLASS_NAME "com/lody/whale/WhaleRuntime"
+#define CLASS_NAME "de/robv/android/xposed/WhaleRuntime"
 
 #ifndef WHALE_ANDROID_AUTO_LOAD
 #define JNI_OnLoad Whale_OnLoad

@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.lody.whale.xposed.XC_MethodHook;
-import com.lody.whale.xposed.XposedHelpers;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedHelpers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         XposedHelpers.findAndHookMethod(MainActivity.class, "add", int.class, int.class, new XC_MethodHook(){
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
                 param.setResult(15);
@@ -31,16 +31,14 @@ public class MainActivity extends AppCompatActivity {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-//                boolean rel = (boolean) XposedHelpers.callStaticMethod(PendingHookTest.class, "test");
-//                Log.d("ZZZ", " call test and result is " + rel);
                 param.setResult(15);
             }
         });
-//
         Log.d("ZZZ", "after hook  10 + 20  = " + add(10, 20) + " and 10 - 20 = " + sub(10, 20));
 
-//        App.initedTest = true;
-//        PendingHookTest.test();
+
+
+
     }
 
     int add(int a, int b) {
